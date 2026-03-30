@@ -4,7 +4,7 @@ A comprehensive, full-stack personal finance tracker that helps you monitor inco
 
 ## 🌐 Live Application Links
 - **🔥 Complete Live Site**: [View Live Project](https://finance-tracker-inky-nine.vercel.app/login)
-- **Frontend App**: [Vercel Deployment URL](https://finance-tracker-2js3bhvtm-swarnaverma10s-projects.vercel.app)
+- **Frontend App**: [Vercel Deployment URL](https://finance-tracker-inky-nine.vercel.app/login)
 - **Node.js Backend (Render)**: [Backend API URL](https://finance-tracker-backend-8wxy.onrender.com)
 - **Python AI Service (Render)**: [AI Engine URL](https://finance-tracker-ai-2qvx.onrender.com)
 
