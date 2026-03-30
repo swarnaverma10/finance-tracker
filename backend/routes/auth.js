@@ -3,7 +3,7 @@ const router = express.Router();
 const User = require('../models/User');  // ✅ FIXED
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const JWT_SECRET = "finance_secret_key_123";
+const JWT_SECRET = process.env.JWT_SECRET || "finance_secret_key_123";
 
 router.post('/signup', async (req, res) => {
   console.log("🔥 SIGNUP HIT");

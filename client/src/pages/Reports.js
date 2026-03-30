@@ -181,6 +181,77 @@ export default function Reports() {
           )}
         </div>
 
+        {/* MONTHLY SUMMARY TABLE */}
+        <div className="card" style={{ padding: '0px', overflow: 'hidden' }}>
+          <div style={{ padding: '24px', borderBottom: '1px solid #1e293b', display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <FaHistory style={{ color: '#10b981' }} />
+            <h3 style={{ fontWeight: 600, color: '#f8fafc', fontSize: '1rem' }}>Monthly Summary Reports</h3>
+          </div>
+
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid #1e293b', background: 'rgba(15, 23, 42, 0.5)' }}>
+                  <th style={{ padding: '16px 24px', fontSize: '0.75rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase' }}>Month</th>
+                  <th style={{ padding: '16px 24px', fontSize: '0.75rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase' }}>Total Income</th>
+                  <th style={{ padding: '16px 24px', fontSize: '0.75rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase' }}>Total Expense</th>
+                  <th style={{ padding: '16px 24px', fontSize: '0.75rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase' }}>Savings</th>
+                  <th style={{ padding: '16px 24px', fontSize: '0.75rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', textAlign: 'right' }}>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Object.keys(data.reduce((acc, t) => {
+                  const date = new Date(t.date);
+                  const monthYear = date.toLocaleString('default', { month: 'long', year: 'numeric' });
+                  if (!acc[monthYear]) acc[monthYear] = { income: 0, expense: 0 };
+                  if (t.type === 'income') acc[monthYear].income += Number(t.amount);
+                  else acc[monthYear].expense += Number(t.amount);
+                  return acc;
+                }, {})).length === 0 ? (
+                  <tr>
+                    <td colSpan="5" style={{ padding: '40px', textAlign: 'center', color: '#64748b', fontSize: '0.9rem' }}>No monthly data available.</td>
+                  </tr>
+                ) : (
+                  Object.entries(data.reduce((acc, t) => {
+                    const date = new Date(t.date);
+                    const monthYear = date.toLocaleString('default', { month: 'long', year: 'numeric' });
+                    if (!acc[monthYear]) acc[monthYear] = { income: 0, expense: 0 };
+                    if (t.type === 'income') acc[monthYear].income += Number(t.amount);
+                    else acc[monthYear].expense += Number(t.amount);
+                    return acc;
+                  }, {})).map(([month, totals], i) => {
+                    const savings = totals.income - totals.expense;
+                    return (
+                      <tr key={i} style={{ borderBottom: '1px solid #1e293b', transition: 'background 0.2s' }}>
+                        <td style={{ padding: '16px 24px', fontSize: '0.85rem', color: '#f8fafc', fontWeight: 600 }}>{month}</td>
+                        <td style={{ padding: '16px 24px', fontSize: '0.85rem', color: '#10b981' }}>₹{totals.income.toLocaleString()}</td>
+                        <td style={{ padding: '16px 24px', fontSize: '0.85rem', color: '#f43f5e' }}>₹{totals.expense.toLocaleString()}</td>
+                        <td style={{ padding: '16px 24px', fontSize: '0.85rem', color: savings >= 0 ? '#6366f1' : '#f43f5e', fontWeight: 700 }}>
+                          ₹{savings.toLocaleString()}
+                        </td>
+                        <td style={{ padding: '16px 24px', textAlign: 'right' }}>
+                          <span style={{ 
+                            fontSize: '0.65rem', 
+                            padding: '4px 8px', 
+                            borderRadius: '4px', 
+                            background: savings >= 0 ? 'rgba(16, 185, 129, 0.1)' : 'rgba(244, 63, 94, 0.1)',
+                            color: savings >= 0 ? '#10b981' : '#f43f5e',
+                            border: `1px solid ${savings >= 0 ? 'rgba(16, 185, 129, 0.2)' : 'rgba(244, 63, 94, 0.2)'}`,
+                            fontWeight: 700,
+                            textTransform: 'uppercase'
+                          }}>
+                            {savings >= 0 ? 'Positive' : 'Deficit'}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
         {/* DETAILED TRANSACTION LIST */}
         <div className="card" style={{ padding: '0px', overflow: 'hidden' }}>
           <div style={{ padding: '24px', borderBottom: '1px solid #1e293b', display: 'flex', alignItems: 'center', gap: '10px' }}>

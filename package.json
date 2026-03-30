@@ -2,6 +2,12 @@
   "name": "finance-tracker-root",
   "version": "1.0.0",
   "scripts": {
+    "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
+    "backend": "cd backend && npm run dev",
+    "frontend": "cd client && npm start",
     "build": "cd client && npm install && npm run build"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
   }
 }
