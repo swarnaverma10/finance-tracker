@@ -3,7 +3,9 @@ import {
   BarChart, Bar, XAxis, YAxis,
   Tooltip, ResponsiveContainer, CartesianGrid
 } from "recharts";
-import { FaArrowUp, FaArrowDown, FaPiggyBank } from "react-icons/fa";
+import { FaArrowUp, FaArrowDown, FaPiggyBank, FaDownload } from "react-icons/fa";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 export default function Reports() {
   const [data, setData] = useState([]);
@@ -32,6 +34,61 @@ export default function Reports() {
       return acc;
     }, {})
   );
+
+  const downloadReport = () => {
+    const doc = new jsPDF();
+    const date = new Date().toLocaleDateString();
+
+    // Title
+    doc.setFontSize(20);
+    doc.setTextColor(99, 102, 241);
+    doc.text("Finlytics - Financial Report", 15, 20);
+    
+    doc.setFontSize(10);
+    doc.setTextColor(100, 116, 139);
+    doc.text(`Generated on: ${date}`, 15, 28);
+
+    // Summary Section
+    doc.setFontSize(14);
+    doc.setTextColor(30, 41, 59);
+    doc.text("Summary", 15, 45);
+
+    const summaryData = [
+      ["Total Income", `Rs.${totalIncome.toLocaleString()}`],
+      ["Total Expenses", `Rs.${totalExpense.toLocaleString()}`],
+      ["Total Savings", `Rs.${savings.toLocaleString()}`]
+    ];
+
+    doc.autoTable({
+      startY: 50,
+      head: [["Category", "Amount"]],
+      body: summaryData,
+      theme: 'striped',
+      headStyles: { fillStyle: [99, 102, 241] }
+    });
+
+    // Transactions Table
+    doc.text("Recent Transactions", 15, doc.lastAutoTable.finalY + 15);
+    
+    const tableHeaders = [["Date", "Description", "Category", "Type", "Amount"]];
+    const tableData = data.map(t => [
+      new Date(t.date).toLocaleDateString(),
+      t.description || "-",
+      t.category || "-",
+      t.type.toUpperCase(),
+      `Rs.${t.amount.toLocaleString()}`
+    ]);
+
+    doc.autoTable({
+      startY: doc.lastAutoTable.finalY + 20,
+      head: tableHeaders,
+      body: tableData,
+      theme: 'grid',
+      headStyles: { fillColor: [79, 70, 229] }
+    });
+
+    doc.save(`Financial_Report_${date}.pdf`);
+  };
 
   const summaryCards = [
     {
@@ -63,21 +120,44 @@ export default function Reports() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
 
-      <div>
-        <h1 style={{
-          fontSize: '2rem',
-          fontWeight: 800,
-          background: 'linear-gradient(135deg, #e0e7ff, #c7d2fe, #a5b4fc)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          backgroundClip: 'text',
-          letterSpacing: '-0.025em',
-        }}>
-          Monthly Report
-        </h1>
-        <p style={{ color: '#64748b', fontSize: '0.9rem', marginTop: '4px' }}>
-          Summary of your financial activity
-        </p>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+          <h1 style={{
+            fontSize: '2rem',
+            fontWeight: 800,
+            background: 'linear-gradient(135deg, #e0e7ff, #c7d2fe, #a5b4fc)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+            letterSpacing: '-0.025em',
+          }}>
+            Monthly Report
+          </h1>
+          <p style={{ color: '#64748b', fontSize: '0.9rem', marginTop: '4px' }}>
+            Summary of your financial activity
+          </p>
+        </div>
+
+        <button 
+          onClick={downloadReport}
+          className="btn-primary" 
+          style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '8px',
+            padding: '10px 18px',
+            borderRadius: '10px',
+            background: 'linear-gradient(135deg, #6366f1, #4f46e5)',
+            color: 'white',
+            fontWeight: 600,
+            fontSize: '0.85rem',
+            cursor: 'pointer',
+            border: 'none',
+            boxShadow: '0 4px 15px rgba(99, 102, 241, 0.2)'
+          }}
+        >
+          <FaDownload /> Download PDF
+        </button>
       </div>
 
       {/* SUMMARY CARDS */}
