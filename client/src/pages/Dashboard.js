@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import {
   PieChart, Pie, Cell,
   LineChart, Line,
-  BarChart, Bar,
   XAxis, YAxis, Tooltip,
   ResponsiveContainer, CartesianGrid
 } from "recharts";
@@ -51,18 +50,6 @@ export default function Dashboard() {
     name: new Date(d.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
     amount: Number(d.amount)
   }));
-
-  // 📊 PAYMENT
-  const paymentData = Object.values(
-    data.reduce((acc, item) => {
-      acc[item.payment] = acc[item.payment] || {
-        name: item.payment || "Other",
-        value: 0
-      };
-      acc[item.payment].value += Number(item.amount);
-      return acc;
-    }, {})
-  );
 
   const summaryCards = [
     {
