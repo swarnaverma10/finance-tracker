@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import Sidebar from "./components/layout/Sidebar";
@@ -49,19 +49,23 @@ function AppRoutes() {
 
 // Private Route
 function PrivateRoute({ children }) {
-  const isAuth = localStorage.getItem("isAuth");
-  return isAuth ? children : <Navigate to="/login" />;
+  const token = localStorage.getItem("token");
+  return token ? children : <Navigate to="/login" />;
 }
 
 export default function App() {
-  const isAuth = localStorage.getItem("isAuth");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 1024);
+
+  // Handle window resizing
+  useEffect(() => {
+    const handleResize = () => setIsDesktop(window.innerWidth >= 1024);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
   const closeSidebar = () => setIsSidebarOpen(false);
-
-  // Detect if desktop (>= 1024px)
-  const isDesktop = typeof window !== 'undefined' && window.innerWidth >= 1024;
 
   return (
     <BrowserRouter>
@@ -70,11 +74,11 @@ export default function App() {
         {/* AUTH ROUTES */}
         <Route
           path="/login"
-          element={isAuth ? <Navigate to="/" /> : <Login />}
+          element={localStorage.getItem("token") ? <Navigate to="/" /> : <Login />}
         />
         <Route
           path="/signup"
-          element={isAuth ? <Navigate to="/" /> : <Signup />}
+          element={localStorage.getItem("token") ? <Navigate to="/" /> : <Signup />}
         />
 
         {/* MAIN APP */}

@@ -17,15 +17,14 @@ export default function Sidebar({ closeSidebar }) {
   const menu = [
     { name: "Dashboard", path: "/", icon: <FaHome /> },
     { name: "Transactions", path: "/expenses", icon: <FaWallet /> },
+    { name: "Budget", path: "/budget", icon: <FaChartPie /> },
     { name: "Charts", path: "/charts", icon: <FaChartBar /> },
     { name: "Reports", path: "/reports", icon: <FaFileAlt /> },
-    // Keeping these as they were part of the app, but placing them slightly lower or as secondary if needed
-    { name: "Budget", path: "/budget", icon: <FaChartPie /> },
-    { name: "AI AI-Insights", path: "/ai", icon: <FaBrain /> },
+    { name: "AI Insights", path: "/ai", icon: <FaBrain /> },
   ];
 
   const logout = () => {
-    localStorage.removeItem("isAuth");
+    localStorage.removeItem("token");
     window.location.href = "/login";
   };
 

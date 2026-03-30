@@ -13,7 +13,7 @@ export default function Login() {
     setError("");
     setLoading(true);
     try {
-      const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
+      const API_URL = process.env.REACT_APP_API_URL || "http://127.0.0.1:5000/api";
       const res = await fetch(`${API_URL}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -23,7 +23,7 @@ export default function Login() {
       if (!res.ok) {
         setError(data.message || "Invalid credentials");
       } else {
-        localStorage.setItem("isAuth", "true");
+        localStorage.setItem("token", data.token);
         alert("Login successful 🎉");
         navigate("/");
       }

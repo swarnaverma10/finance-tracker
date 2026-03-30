@@ -13,7 +13,7 @@ export default function Signup() {
     setError("");
     setLoading(true);
     try {
-      const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
+      const API_URL = process.env.REACT_APP_API_URL || "http://127.0.0.1:5000/api";
       const res = await fetch(`${API_URL}/auth/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
