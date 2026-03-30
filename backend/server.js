@@ -14,12 +14,16 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: process.env.CLIENT_URL 
-      ? [process.env.CLIENT_URL, "http://localhost:3000", "http://localhost:3001"] 
-      : ["http://localhost:3000", "http://localhost:3001"],
+    origin: "*", 
     credentials: true,
   })
 );
+
+// Logging middleware
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.url}`);
+  next();
+});
 
 // 🔥 ROUTES
 const authRoutes = require("./routes/auth");
