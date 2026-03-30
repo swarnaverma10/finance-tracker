@@ -3,9 +3,7 @@ import {
   BarChart, Bar, XAxis, YAxis,
   Tooltip, ResponsiveContainer, CartesianGrid
 } from "recharts";
-import { FaArrowUp, FaArrowDown, FaPiggyBank, FaDownload } from "react-icons/fa";
-import jsPDF from "jspdf";
-import "jspdf-autotable";
+import { FaArrowUp, FaArrowDown, FaPiggyBank, FaHistory } from "react-icons/fa";
 
 export default function Reports() {
   const [data, setData] = useState([]);
@@ -34,61 +32,6 @@ export default function Reports() {
       return acc;
     }, {})
   );
-
-  const downloadReport = () => {
-    const doc = new jsPDF();
-    const date = new Date().toLocaleDateString();
-
-    // Title
-    doc.setFontSize(20);
-    doc.setTextColor(99, 102, 241);
-    doc.text("Finlytics - Financial Report", 15, 20);
-    
-    doc.setFontSize(10);
-    doc.setTextColor(100, 116, 139);
-    doc.text(`Generated on: ${date}`, 15, 28);
-
-    // Summary Section
-    doc.setFontSize(14);
-    doc.setTextColor(30, 41, 59);
-    doc.text("Summary", 15, 45);
-
-    const summaryData = [
-      ["Total Income", `Rs.${totalIncome.toLocaleString()}`],
-      ["Total Expenses", `Rs.${totalExpense.toLocaleString()}`],
-      ["Total Savings", `Rs.${savings.toLocaleString()}`]
-    ];
-
-    doc.autoTable({
-      startY: 50,
-      head: [["Category", "Amount"]],
-      body: summaryData,
-      theme: 'striped',
-      headStyles: { fillStyle: [99, 102, 241] }
-    });
-
-    // Transactions Table
-    doc.text("Recent Transactions", 15, doc.lastAutoTable.finalY + 15);
-    
-    const tableHeaders = [["Date", "Description", "Category", "Type", "Amount"]];
-    const tableData = data.map(t => [
-      new Date(t.date).toLocaleDateString(),
-      t.description || "-",
-      t.category || "-",
-      t.type.toUpperCase(),
-      `Rs.${t.amount.toLocaleString()}`
-    ]);
-
-    doc.autoTable({
-      startY: doc.lastAutoTable.finalY + 20,
-      head: tableHeaders,
-      body: tableData,
-      theme: 'grid',
-      headStyles: { fillColor: [79, 70, 229] }
-    });
-
-    doc.save(`Financial_Report_${date}.pdf`);
-  };
 
   const summaryCards = [
     {
@@ -120,44 +63,21 @@ export default function Reports() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div>
-          <h1 style={{
-            fontSize: '2rem',
-            fontWeight: 800,
-            background: 'linear-gradient(135deg, #e0e7ff, #c7d2fe, #a5b4fc)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-            letterSpacing: '-0.025em',
-          }}>
-            Monthly Report
-          </h1>
-          <p style={{ color: '#64748b', fontSize: '0.9rem', marginTop: '4px' }}>
-            Summary of your financial activity
-          </p>
-        </div>
-
-        <button 
-          onClick={downloadReport}
-          className="btn-primary" 
-          style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: '8px',
-            padding: '10px 18px',
-            borderRadius: '10px',
-            background: 'linear-gradient(135deg, #6366f1, #4f46e5)',
-            color: 'white',
-            fontWeight: 600,
-            fontSize: '0.85rem',
-            cursor: 'pointer',
-            border: 'none',
-            boxShadow: '0 4px 15px rgba(99, 102, 241, 0.2)'
-          }}
-        >
-          <FaDownload /> Download PDF
-        </button>
+      <div>
+        <h1 style={{
+          fontSize: '2rem',
+          fontWeight: 800,
+          background: 'linear-gradient(135deg, #e0e7ff, #c7d2fe, #a5b4fc)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          backgroundClip: 'text',
+          letterSpacing: '-0.025em',
+        }}>
+          Financial Reports
+        </h1>
+        <p style={{ color: '#64748b', fontSize: '0.9rem', marginTop: '4px' }}>
+          Detailed analysis and transaction history
+        </p>
       </div>
 
       {/* SUMMARY CARDS */}
@@ -212,45 +132,108 @@ export default function Reports() {
         ))}
       </div>
 
-      {/* BAR CHART */}
-      <div className="card">
-        <h3 style={{
-          fontWeight: 600,
-          color: '#cbd5e1',
-          marginBottom: '20px',
-          fontSize: '0.9rem',
-        }}>
-          Category Breakdown
-        </h3>
-
-        {categoryData.length === 0 ? (
-          <div style={{
-            height: '250px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#475569',
-            fontSize: '0.85rem',
+      <div className="grid md:grid-cols-1 gap-8">
+        {/* BAR CHART */}
+        <div className="card">
+          <h3 style={{
+            fontWeight: 600,
+            color: '#cbd5e1',
+            marginBottom: '20px',
+            fontSize: '0.9rem',
           }}>
-            No expense data available
+            Expense Breakdown by Category
+          </h3>
+
+          {categoryData.length === 0 ? (
+            <div style={{
+              height: '250px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#475569',
+              fontSize: '0.85rem',
+            }}>
+              No statistics available
+            </div>
+          ) : (
+            <ResponsiveContainer width="100%" height={280}>
+              <BarChart data={categoryData}>
+                <defs>
+                  <linearGradient id="reportBarGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#818cf8" />
+                    <stop offset="100%" stopColor="#6366f1" />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(99,102,241,0.06)" />
+                <Bar dataKey="value" fill="url(#reportBarGrad)" radius={[6, 6, 0, 0]} />
+                <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
+                <Tooltip 
+                  contentStyle={{ 
+                    background: '#0f172a', 
+                    border: '1px solid #1e293b',
+                    borderRadius: '8px',
+                    color: '#f8fafc' 
+                  }}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          )}
+        </div>
+
+        {/* DETAILED TRANSACTION LIST */}
+        <div className="card" style={{ padding: '0px', overflow: 'hidden' }}>
+          <div style={{ padding: '24px', borderBottom: '1px solid #1e293b', display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <FaHistory style={{ color: '#6366f1' }} />
+            <h3 style={{ fontWeight: 600, color: '#f8fafc', fontSize: '1rem' }}>Detailed Transaction History</h3>
           </div>
-        ) : (
-          <ResponsiveContainer width="100%" height={280}>
-            <BarChart data={categoryData}>
-              <defs>
-                <linearGradient id="reportBarGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#6366f1" />
-                  <stop offset="100%" stopColor="#4f46e5" />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(99,102,241,0.06)" />
-              <Bar dataKey="value" fill="url(#reportBarGrad)" radius={[6, 6, 0, 0]} />
-              <XAxis dataKey="name" tick={{ fontSize: 11 }} />
-              <YAxis tick={{ fontSize: 11 }} />
-              <Tooltip />
-            </BarChart>
-          </ResponsiveContainer>
-        )}
+
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid #1e293b', background: 'rgba(15, 23, 42, 0.5)' }}>
+                  <th style={{ padding: '16px 24px', fontSize: '0.75rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase' }}>Date</th>
+                  <th style={{ padding: '16px 24px', fontSize: '0.75rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase' }}>Description</th>
+                  <th style={{ padding: '16px 24px', fontSize: '0.75rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase' }}>Category</th>
+                  <th style={{ padding: '16px 24px', fontSize: '0.75rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase' }}>Type</th>
+                  <th style={{ padding: '16px 24px', fontSize: '0.75rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', textAlign: 'right' }}>Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.length === 0 ? (
+                  <tr>
+                    <td colSpan="5" style={{ padding: '40px', textAlign: 'center', color: '#64748b', fontSize: '0.9rem' }}>No records found. Start adding transactions to see them here!</td>
+                  </tr>
+                ) : (
+                  [...data].reverse().map((t, i) => (
+                    <tr key={i} style={{ borderBottom: '1px solid #1e293b', transition: 'background 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(30, 41, 59, 0.4)'} onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}>
+                      <td style={{ padding: '16px 24px', fontSize: '0.85rem', color: '#cbd5e1' }}>{new Date(t.date).toLocaleDateString()}</td>
+                      <td style={{ padding: '16px 24px', fontSize: '0.85rem', color: '#f8fafc', fontWeight: 500 }}>{t.description || "N/A"}</td>
+                      <td style={{ padding: '16px 24px' }}>
+                        <span style={{ fontSize: '0.75rem', background: 'rgba(30, 41, 59, 0.8)', padding: '4px 10px', borderRadius: '6px', color: '#94a3b8', border: '1px solid rgba(148, 163, 184, 0.1)' }}>
+                          {t.category || "General"}
+                        </span>
+                      </td>
+                      <td style={{ padding: '16px 24px' }}>
+                        <span style={{ 
+                          fontSize: '0.7rem', 
+                          fontWeight: 700,
+                          color: t.type === 'income' ? '#10b981' : '#f43f5e',
+                          textTransform: 'uppercase'
+                        }}>
+                          {t.type}
+                        </span>
+                      </td>
+                      <td style={{ padding: '16px 24px', fontSize: '0.9rem', color: t.type === 'income' ? '#10b981' : '#f8fafc', fontWeight: 700, textAlign: 'right' }}>
+                        {t.type === 'income' ? '+' : '-'} ₹{Number(t.amount).toLocaleString()}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
     </div>
